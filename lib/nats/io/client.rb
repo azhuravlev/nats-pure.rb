@@ -198,6 +198,8 @@ module NATS
 
     # Establishes a connection to NATS.
     def connect(uri=nil, opts={})
+      puts "DBG: Call connect #{opts.inspect}"
+
       synchronize do
         # In case it has been connected already, then do not need to call this again.
         return if @connect_called
@@ -1430,9 +1432,6 @@ module NATS
       # Clear sticky error
       @last_err = nil
 
-      # Stop working threads before reconnect
-      stop_threads!
-
       # Do reconnect
       srv = nil
       begin
@@ -1521,9 +1520,6 @@ module NATS
       # Kick the flusher so it bails due to closed state
       @flush_queue << :fallout if @flush_queue
 
-      puts "DBG: Call stop_threads"
-      stop_threads!
-
       # TODO: Delete any other state which we are not using here too.
       synchronize do
         @pongs.synchronize do
@@ -1586,7 +1582,11 @@ module NATS
 
     # Start working threads inside lock
     def start_threads!
+      # Always try to stop running threads
+      stop_threads!
       puts "DBG: Start working Threads #{Thread.list.inspect}"
+      puts "DBG: Call backtrace #{Thread.current.backtrace.join("\n")}"
+
       synchronize do
         # Ping interval handling for keeping alive the connection
         @ping_interval_thread = Thread.new { ping_interval_loop }
