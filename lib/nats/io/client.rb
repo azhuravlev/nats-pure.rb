@@ -451,6 +451,8 @@ module NATS
       # FIXME: Support shared thread pool with configurable limits
       # to better support case of having a lot of subscriptions.
       sub.wait_for_msgs_t = Thread.new do
+        puts "Sub #{sub.subject} wait_for_msgs_t Thread started"
+
         loop do
           msg = sub.pending_queue.pop
 
@@ -769,7 +771,10 @@ module NATS
       return if draining?
 
       synchronize do
-        @drain_t ||= Thread.new { do_drain }
+        @drain_t ||= Thread.new do
+          puts "Drain Thread started"
+          do_drain
+        end
       end
     end
 
@@ -1223,6 +1228,7 @@ module NATS
           # Do reconnect under a different thread than the one
           # in which we got the error.
           Thread.new do
+            puts "Reconnecting Thread started"
             begin
               # Abort currently running reads in case they're around
               # FIXME: There might be more graceful way here...
@@ -1251,6 +1257,7 @@ module NATS
 
     # Gathers data from the socket and sends it to the parser.
     def read_loop
+      puts "Read Thread started"
       loop do
         begin
           should_bail = synchronize do
@@ -1278,6 +1285,7 @@ module NATS
     # Waits for client to notify the flusher that it will be
     # it is sending a command.
     def flusher_loop
+      puts "Flusher Thread started"
       loop do
         # Blocks waiting for the flusher to be kicked...
         @flush_queue.pop
@@ -1318,6 +1326,7 @@ module NATS
     end
 
     def ping_interval_loop
+      puts "Ping Interval Thread started"
       loop do
         sleep @options[:ping_interval]
 
@@ -1603,6 +1612,8 @@ module NATS
       @resp_sub.pending_bytes_limit = NATS::IO::DEFAULT_SUB_PENDING_BYTES_LIMIT
       @resp_sub.pending_queue = SizedQueue.new(@resp_sub.pending_msgs_limit)
       @resp_sub.wait_for_msgs_t = Thread.new do
+        puts "RespSub #{@resp_sub.subject} wait_for_msgs_t Thread started"
+
         loop do
           msg = @resp_sub.pending_queue.pop
           @resp_sub.pending_size -= msg.data.size
