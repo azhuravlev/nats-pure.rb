@@ -451,7 +451,7 @@ module NATS
       # FIXME: Support shared thread pool with configurable limits
       # to better support case of having a lot of subscriptions.
       sub.wait_for_msgs_t = Thread.new do
-        puts "Sub #{sub.subject} wait_for_msgs_t Thread started"
+        puts "DBG: Sub #{sub.subject} wait_for_msgs_t Thread started"
 
         loop do
           msg = sub.pending_queue.pop
@@ -698,6 +698,7 @@ module NATS
     # and there are any pending messages, should not be used while
     # holding the lock.
     def close
+      puts "DBG: Close"
       close_connection(CLOSED, true)
     end
 
@@ -772,7 +773,7 @@ module NATS
 
       synchronize do
         @drain_t ||= Thread.new do
-          puts "Drain Thread started"
+          puts "DBG: Drain Thread started"
           do_drain
         end
       end
@@ -1212,6 +1213,8 @@ module NATS
       end
       return if should_bail
 
+      puts "DBG: Op error: #{e.inspect}, current thread: #{Thread.current.inspect}"
+
       synchronize do
         @last_err = e
         err_cb_call(self, e, nil) if @err_cb
@@ -1228,7 +1231,7 @@ module NATS
           # Do reconnect under a different thread than the one
           # in which we got the error.
           Thread.new do
-            puts "Reconnecting Thread started"
+            puts "DBG: Reconnecting Thread started"
             begin
               attempt_reconnect
             rescue NATS::IO::NoServersError => e
@@ -1251,7 +1254,7 @@ module NATS
 
     # Gathers data from the socket and sends it to the parser.
     def read_loop
-      puts "Read Thread started"
+      puts "DBG: Read Thread started"
       loop do
         begin
           should_bail = synchronize do
@@ -1279,7 +1282,7 @@ module NATS
     # Waits for client to notify the flusher that it will be
     # it is sending a command.
     def flusher_loop
-      puts "Flusher Thread started"
+      puts "DBG: Flusher Thread started"
       loop do
         # Blocks waiting for the flusher to be kicked...
         @flush_queue.pop
@@ -1320,7 +1323,7 @@ module NATS
     end
 
     def ping_interval_loop
-      puts "Ping Interval Thread started"
+      puts "DBG: Ping Interval Thread started"
       loop do
         sleep @options[:ping_interval]
 
@@ -1506,6 +1509,8 @@ module NATS
     end
 
     def close_connection(conn_status, do_cbs=true)
+      puts "DBG: close_connection status #{@status} new status #{conn_status}"
+
       synchronize do
         if @status == CLOSED
           @status = conn_status
@@ -1516,6 +1521,7 @@ module NATS
       # Kick the flusher so it bails due to closed state
       @flush_queue << :fallout if @flush_queue
 
+      puts "DBG: Call stop_threads"
       stop_threads!
 
       # TODO: Delete any other state which we are not using here too.
@@ -1570,8 +1576,8 @@ module NATS
     def stop_threads!
       # FIXME: More graceful way instead of Thread#exit?
       # Ensure ping interval and flusher are not running anymore
+      puts "DBG: Stop working Threads #{Thread.list.inspect}"
       synchronize do
-        puts "Stop working Threads"
         @ping_interval_thread.exit if @ping_interval_thread and @ping_interval_thread.alive?
         @flusher_thread.exit if @flusher_thread and @flusher_thread.alive?
         @read_loop_thread.exit if @read_loop_thread and @read_loop_thread.alive?
@@ -1580,6 +1586,7 @@ module NATS
 
     # Start working threads inside lock
     def start_threads!
+      puts "DBG: Start working Threads #{Thread.list.inspect}"
       synchronize do
         # Ping interval handling for keeping alive the connection
         @ping_interval_thread = Thread.new { ping_interval_loop }
@@ -1611,7 +1618,7 @@ module NATS
       @resp_sub.pending_bytes_limit = NATS::IO::DEFAULT_SUB_PENDING_BYTES_LIMIT
       @resp_sub.pending_queue = SizedQueue.new(@resp_sub.pending_msgs_limit)
       @resp_sub.wait_for_msgs_t = Thread.new do
-        puts "RespSub #{@resp_sub.subject} wait_for_msgs_t Thread started"
+        puts "DBG: RespSub #{@resp_sub.subject} wait_for_msgs_t Thread started"
 
         loop do
           msg = @resp_sub.pending_queue.pop
