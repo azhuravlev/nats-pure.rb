@@ -1230,12 +1230,6 @@ module NATS
           Thread.new do
             puts "Reconnecting Thread started"
             begin
-              # Abort currently running reads in case they're around
-              # FIXME: There might be more graceful way here...
-              @read_loop_thread.exit if @read_loop_thread.alive?
-              @flusher_thread.exit if @flusher_thread.alive?
-              @ping_interval_thread.exit if @ping_interval_thread.alive?
-
               attempt_reconnect
             rescue NATS::IO::NoServersError => e
               @last_err = e
@@ -1433,6 +1427,9 @@ module NATS
       # Clear sticky error
       @last_err = nil
 
+      # Stop working threads before reconnect
+      stop_threads!
+
       # Do reconnect
       srv = nil
       begin
@@ -1518,21 +1515,8 @@ module NATS
 
       # Kick the flusher so it bails due to closed state
       @flush_queue << :fallout if @flush_queue
-      Thread.pass
 
-      # FIXME: More graceful way of handling the following?
-      # Ensure ping interval and flusher are not running anymore
-      if @ping_interval_thread and @ping_interval_thread.alive?
-        @ping_interval_thread.exit
-      end
-
-      if @flusher_thread and @flusher_thread.alive?
-        @flusher_thread.exit
-      end
-
-      if @read_loop_thread and @read_loop_thread.alive?
-        @read_loop_thread.exit
-      end
+      stop_threads!
 
       # TODO: Delete any other state which we are not using here too.
       synchronize do
@@ -1582,18 +1566,33 @@ module NATS
       end
     end
 
+    # Stop working threads inside lock
+    def stop_threads!
+      # FIXME: More graceful way instead of Thread#exit?
+      # Ensure ping interval and flusher are not running anymore
+      synchronize do
+        puts "Stop working Threads"
+        @ping_interval_thread.exit if @ping_interval_thread and @ping_interval_thread.alive?
+        @flusher_thread.exit if @flusher_thread and @flusher_thread.alive?
+        @read_loop_thread.exit if @read_loop_thread and @read_loop_thread.alive?
+      end
+    end
+
+    # Start working threads inside lock
     def start_threads!
-      # Reading loop for gathering data
-      @read_loop_thread = Thread.new { read_loop }
-      @read_loop_thread.abort_on_exception = true
+      synchronize do
+        # Ping interval handling for keeping alive the connection
+        @ping_interval_thread = Thread.new { ping_interval_loop }
+        @ping_interval_thread.abort_on_exception = true
 
-      # Flusher loop for sending commands
-      @flusher_thread = Thread.new { flusher_loop }
-      @flusher_thread.abort_on_exception = true
+        # Flusher loop for sending commands
+        @flusher_thread = Thread.new { flusher_loop }
+        @flusher_thread.abort_on_exception = true
 
-      # Ping interval handling for keeping alive the connection
-      @ping_interval_thread = Thread.new { ping_interval_loop }
-      @ping_interval_thread.abort_on_exception = true
+        # Reading loop for gathering data
+        @read_loop_thread = Thread.new { read_loop }
+        @read_loop_thread.abort_on_exception = true
+      end
     end
 
     # Prepares requests subscription that handles the responses
