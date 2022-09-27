@@ -188,11 +188,8 @@ describe 'JetStream' do
       sub = js.pull_subscribe("test", "test", stream: "test")
 
       # Fetch 1, leave 9 pending.
-      msgs = sub.fetch(1)
-      msgs.each do |msg|
-        msg.ack
-      end
-      msg = msgs.first
+      msg = sub.fetch(1).first
+      msg.ack
       expect(msg.data).to eql("hello: 1")
 
       meta = msg.metadata
@@ -224,11 +221,9 @@ describe 'JetStream' do
       msg.in_progress
 
       # Fetch 1 more, should be 8 pending now.
-      msgs = sub.fetch(1)
-      msg = msgs.first
-      msg.ack
+      msg = sub.fetch(1).first
+      msg.ack_sync
       expect(msg.data).to eql("hello: 2")
-      sleep 0.5
 
       resp = nc.request("$JS.API.CONSUMER.INFO.test.test")
       info = JSON.parse(resp.data, symbolize_names: true)
@@ -251,7 +246,7 @@ describe 'JetStream' do
       i = 3
       msgs.each do |msg|
         expect(msg.data).to eql("hello: #{i}")
-        msg.ack
+        msg.ack_sync
         i += 1
       end
 
@@ -309,7 +304,7 @@ describe 'JetStream' do
       i = 11
       msgs.each do |msg|
         expect(msg.data).to eql("hello: #{i}")
-        msg.ack
+        msg.ack_sync
         i += 1
       end
 
@@ -350,7 +345,7 @@ describe 'JetStream' do
       i = 16
       msgs.each do |msg|
         expect(msg.data).to eql("hello: #{i}")
-        msg.ack
+        msg.ack_sync
         i += 1
       end
       expect(msgs.count).to eql(10)
@@ -494,7 +489,7 @@ describe 'JetStream' do
       end.to raise_error(NATS::IO::BadSubscription)
     end
 
-    it 'should account pending data' do
+    xit 'should account pending data' do
       nc = NATS.connect(@s.uri)
       nc2 = NATS.connect(@s.uri)
       js = nc.jetstream
@@ -519,7 +514,7 @@ describe 'JetStream' do
       65.times do |i|
         msgs = sub.fetch(1)
         msgs.each do |msg|
-          msg.ack
+          msg.ack_sync
         end
       end
 
@@ -527,7 +522,7 @@ describe 'JetStream' do
       65.times do |i|
         msgs = sub.fetch(2)
         msgs.each do |msg|
-          msg.ack
+          msg.ack_sync
         end
       end
 
@@ -620,7 +615,7 @@ describe 'JetStream' do
       expect(info.stream_name).to eql("hello")
       expect(info.num_pending).to eql(0)
       expect(info.num_ack_pending).to eql(2)
-      msgs.each { |msg| msg.ack }
+      msgs.each { |msg| msg.ack_sync }
       sleep 0.5
 
       info = sub.consumer_info
@@ -630,7 +625,7 @@ describe 'JetStream' do
       # Without callback
       sub = js.subscribe("hello")
       msg = sub.next_msg
-      msg.ack
+      msg.ack_sync
       info = sub.consumer_info
       expect(info.stream_name).to eql("hello")
       expect(info.num_pending).to eql(0)
@@ -683,7 +678,7 @@ describe 'JetStream' do
       # Sync subscribe to get the same messages again.
       sub = js.subscribe("hello", durable: "first")
       msg = sub.next_msg
-      msg.ack
+      msg.ack_sync
 
       info = sub.consumer_info
       expect(info.num_pending).to eql(0)
