@@ -454,7 +454,6 @@ module NATS
       # FIXME: Support shared thread pool with configurable limits
       # to better support case of having a lot of subscriptions.
       sub.wait_for_msgs_t = Thread.new do
-        break if Thread.current[:parent] && !Thread.current[:parent].alive?
         puts "DBG: Sub #{sub.subject} wait_for_msgs_t Thread started"
 
         loop do
@@ -486,7 +485,6 @@ module NATS
           end
         end
       end
-      sub.wait_for_msgs_t[:parent] = Thread.current
 
       sub
     end
@@ -1633,8 +1631,6 @@ module NATS
         puts "DBG: RespSub #{@resp_sub.subject} wait_for_msgs_t Thread started"
 
         loop do
-          break if Thread.current[:parent] && !Thread.current[:parent].alive?
-
           msg = @resp_sub.pending_queue.pop
           @resp_sub.pending_size -= msg.data.size
 
@@ -1654,7 +1650,6 @@ module NATS
           end
         end
       end
-      @resp_sub.wait_for_msgs_t[:parent] = Thread.current
 
       sid = (@ssid += 1)
       @subs[sid] = @resp_sub
