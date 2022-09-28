@@ -1329,3 +1329,52 @@ module NATS
     end
   end
 end
+
+# DBG: Call connect {}
+# DBG: Stop working Threads [#<Thread:0x00007f5def1f3c78 run>,
+#                            #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>]
+# DBG: Start working Threads [#<Thread:0x00007f5def1f3c78 run>, #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>]
+# DBG: Call backtrace /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1588:in `backtrace'
+# DBG: Read Thread started
+# DBG: RespSub _INBOX.TBU2tgnKdjpqcCRhJAUooI.* wait_for_msgs_t Thread started
+# DBG: Flusher Thread started
+# DBG: Ping Interval Thread started
+# DBG: Call connect {}
+# DBG: Stop working Threads [#<Thread:0x00007f5def1f3c78 run>,
+#                            #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>,
+#                            #<Thread:0x00007f5de9df3d80 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>,
+#                            #<Thread:0x00007f5de9df3c18 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>,
+#                            #<Thread:0x00007f5de9df3b28 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>,
+#                            #<Thread:0x00007f5de9df2228 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1620 sleep_forever>]
+# DBG: Start working Threads [#<Thread:0x00007f5def1f3c78 run>,
+#                             #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>,
+#                             #<Thread:0x00007f5de9df3d80 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>,
+#                             #<Thread:0x00007f5de9df3c18 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>,
+#                             #<Thread:0x00007f5de9df3b28 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>,
+#                             #<Thread:0x00007f5de9df2228 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1620 sleep_forever>]
+# DBG: Call backtrace /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1588:in `backtrace'
+# DBG: Ping Interval Thread started
+# DBG: Read Thread started
+# DBG: Flusher Thread started
+# DBG: Call connect {}
+# DBG: Stop working Threads [#<Thread:0x00007f5def1f3c78 run>,
+# #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>,
+# #<Thread:0x00007f5de9df3d80 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>,
+# #<Thread:0x00007f5de9df3c18 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>,
+# #<Thread:0x00007f5de9df3b28 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>,
+# #<Thread:0x00007f5de9df2228 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1620 sleep_forever>,
+# #<Thread:0x00007f5de90c75d0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>,
+# #<Thread:0x00007f5de90c7490 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>,
+# #<Thread:0x00007f5de90c73a0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>]
+# DBG: Start working Threads [#<Thread:0x00007f5def1f3c78 run>, #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>, #<Thread:0x00007f5de9df3d80 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de9df3c18 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de9df3b28 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>, #<Thread:0x00007f5de9df2228 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1620 sleep_forever>, #<Thread:0x00007f5de90c75d0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de90c7490 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de90c73a0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>]
+# DBG: Call backtrace /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1588:in `backtrace'
+# DBG: Flusher Thread started
+# DBG: Ping Interval Thread started
+# DBG: Read Thread started
+# DBG: Call connect {}
+# DBG: Stop working Threads [#<Thread:0x00007f5def1f3c78 run>, #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>, #<Thread:0x00007f5de9df3d80 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de9df3c18 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de9df3b28 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>, #<Thread:0x00007f5de9df2228 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1620 sleep_forever>, #<Thread:0x00007f5de90c75d0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de90c7490 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de90c73a0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>, #<Thread:0x00007f5de907c8a0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de907c760 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de907c670 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>]
+# DBG: Start working Threads [#<Thread:0x00007f5def1f3c78 run>, #<Thread:0x00007f5dea3db450 /usr/local/bundle/gems/activerecord-7.0.3/lib/active_record/connection_adapters/abstract/connection_pool/reaper.rb:40 sleep>, #<Thread:0x00007f5de9df3d80 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de9df3c18 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de9df3b28 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>, #<Thread:0x00007f5de9df2228 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1620 sleep_forever>, #<Thread:0x00007f5de90c75d0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de90c7490 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de90c73a0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>, #<Thread:0x00007f5de907c8a0 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1592 sleep>, #<Thread:0x00007f5de907c760 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1596 sleep_forever>, #<Thread:0x00007f5de907c670 /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1600 sleep>]
+# DBG: Call backtrace /usr/local/bundle/bundler/gems/nats-pure.rb-2d41c12d1d1d/lib/nats/io/client.rb:1588:in `backtrace'
+# DBG: Flusher Thread started
+# DBG: Ping Interval Thread started
+# DBG: Read Thread started

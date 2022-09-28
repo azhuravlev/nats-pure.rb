@@ -446,6 +446,7 @@ module NATS
       unless callback
         cond = sub.new_cond
         sub.wait_for_msgs_cond = cond
+        return sub
       end
 
       # Async subscriptions each own a single thread for the
@@ -453,6 +454,7 @@ module NATS
       # FIXME: Support shared thread pool with configurable limits
       # to better support case of having a lot of subscriptions.
       sub.wait_for_msgs_t = Thread.new do
+        break if Thread.current[:parent] && !Thread.current[:parent].alive?
         puts "DBG: Sub #{sub.subject} wait_for_msgs_t Thread started"
 
         loop do
@@ -483,7 +485,8 @@ module NATS
             end
           end
         end
-      end if callback
+      end
+      sub.wait_for_msgs_t[:parent] = Thread.current
 
       sub
     end
@@ -1259,6 +1262,8 @@ module NATS
       puts "DBG: Read Thread started"
       loop do
         begin
+          break if Thread.current[:parent] && !Thread.current[:parent].alive?
+
           should_bail = synchronize do
             # FIXME: In case of reconnect as well?
             @status == CLOSED or @status == RECONNECTING
@@ -1286,6 +1291,8 @@ module NATS
     def flusher_loop
       puts "DBG: Flusher Thread started"
       loop do
+        break if Thread.current[:parent] && !Thread.current[:parent].alive?
+
         # Blocks waiting for the flusher to be kicked...
         @flush_queue.pop
 
@@ -1327,6 +1334,7 @@ module NATS
     def ping_interval_loop
       puts "DBG: Ping Interval Thread started"
       loop do
+        break if Thread.current[:parent] && !Thread.current[:parent].alive?
         sleep @options[:ping_interval]
 
         # Skip ping interval until connected
@@ -1586,18 +1594,22 @@ module NATS
       stop_threads!
       puts "DBG: Start working Threads #{Thread.list.inspect}"
       puts "DBG: Call backtrace #{Thread.current.backtrace.join("\n")}"
+      current_thread = Thread.current
 
       synchronize do
         # Ping interval handling for keeping alive the connection
         @ping_interval_thread = Thread.new { ping_interval_loop }
+        @ping_interval_thread[:parent] = current_thread
         @ping_interval_thread.abort_on_exception = true
 
         # Flusher loop for sending commands
         @flusher_thread = Thread.new { flusher_loop }
+        @flusher_thread[:parent] = current_thread
         @flusher_thread.abort_on_exception = true
 
         # Reading loop for gathering data
         @read_loop_thread = Thread.new { read_loop }
+        @read_loop_thread[:parent] = current_thread
         @read_loop_thread.abort_on_exception = true
       end
     end
@@ -1621,6 +1633,8 @@ module NATS
         puts "DBG: RespSub #{@resp_sub.subject} wait_for_msgs_t Thread started"
 
         loop do
+          break if Thread.current[:parent] && !Thread.current[:parent].alive?
+
           msg = @resp_sub.pending_queue.pop
           @resp_sub.pending_size -= msg.data.size
 
@@ -1640,6 +1654,7 @@ module NATS
           end
         end
       end
+      @resp_sub.wait_for_msgs_t[:parent] = Thread.current
 
       sid = (@ssid += 1)
       @subs[sid] = @resp_sub
